@@ -1,0 +1,33 @@
+diff --git a/code/main.c b/code/main.c
+index 21c5d9a..7adecf0 100644
+--- a/code/main.c
++++ b/code/main.c
+@@ -186,6 +186,11 @@ int main(int argc, char **argv) {
+ 
+     // Fill the task queue
+     unsigned long task_c = strlen(tasks_and_times);
++
++    size_t total_sz = sizeof(task) * task_c;
++    task_ptr tasks = (task_ptr) malloc(total_sz);
++    memset(tasks, 0, total_sz);
++
+     for (unsigned long i = 0; i < task_c; ++i) {
+         char task_type = tasks_and_times[i];
+ 
+@@ -194,7 +199,7 @@ int main(int argc, char **argv) {
+             case 'B':
+             case 'C':
+             case 'D': {
+-                task_ptr t = (task_ptr) malloc(sizeof(task));
++                task_ptr t = tasks + i;
+                 t->type = task_type;
+                 t->start = t->end = 0;
+                 blocking_q_put(sched_q, t);
+@@ -251,6 +256,7 @@ int main(int argc, char **argv) {
+         processor_destroy(p);
+     }
+ 
++    free(tasks);
+     free(sched_q);
+ 
+     return EXIT_SUCCESS;
